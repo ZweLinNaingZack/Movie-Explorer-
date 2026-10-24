@@ -1,0 +1,56 @@
+﻿<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <meta name="color-scheme" content="light dark" />
+  <title>Movie Explorer</title>
+  <!-- Play CDN: fine for phase 1; dark: variants follow the OS preference by default -->
+  <script src="https://cdn.tailwindcss.com"></script>
+</head>
+<body class="min-h-screen bg-slate-50 text-slate-900 dark:bg-slate-950 dark:text-slate-100">
+  <main class="mx-auto max-w-6xl px-4 py-8">
+    <header class="mb-6 text-center">
+      <h1 class="text-3xl font-bold tracking-tight">Movie Explorer</h1>
+      <p class="mt-1 text-sm text-slate-600 dark:text-slate-400">Search movies powered by TMDB</p>
+    </header>
+
+    <form id="search-form" role="search" class="mx-auto mb-6 max-w-xl">
+      <label for="search-input" class="sr-only">Search movies by title</label>
+      <div class="relative">
+        <input
+          id="search-input"
+          type="text"
+          autocomplete="off"
+          placeholder="Search for a movie, e.g. Inception"
+          class="w-full rounded-lg border border-slate-300 bg-white py-3 pl-4 pr-12 text-base shadow-sm
+                 placeholder:text-slate-500
+                 focus:outline-none focus:ring-2 focus:ring-indigo-500
+                 dark:border-slate-700 dark:bg-slate-900 dark:placeholder:text-slate-400"
+        />
+        <button
+          id="clear-button"
+          type="button"
+          aria-label="Clear search"
+          class="absolute right-2 top-1/2 flex h-8 w-8 -translate-y-1/2 items-center justify-center rounded-md
+                 text-slate-500 hover:bg-slate-100
+                 focus:outline-none focus:ring-2 focus:ring-indigo-500
+                 dark:text-slate-400 dark:hover:bg-slate-800"
+        >
+          <span aria-hidden="true" class="text-xl leading-none">&times;</span>
+        </button>
+      </div>
+    </form>
+
+    <!-- Status area: idle / empty / error messages go here -->
+    <div id="status" aria-live="polite" class="mb-6 min-h-[1.5rem] text-center text-slate-600 dark:text-slate-400">
+      Start typing to search for movies.
+    </div>
+
+    <!-- Results grid: 2 columns on mobile, 3 at md, 4 at lg -->
+    <ul id="results" class="grid grid-cols-2 gap-4 md:grid-cols-3 lg:grid-cols-4">
+    </ul>
+  </main>
+  <script type="module" src="src/main.js"></script>
+</body>
+</html>
