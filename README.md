@@ -4,7 +4,7 @@ A single-page movie search app. Type a title, pause, and the app queries the
 [TMDB API](https://developer.themoviedb.org/docs) and shows the results as a responsive grid of
 cards with posters, release year, and rating.
 
-**Live demo:** _add link here_
+**Live demo:** https://zwelinnaingzack.github.io/Movie-Explorer-/
 
 ![Movie Explorer demo](docs/demo.gif)
 <!-- Record a short GIF (type a query, show skeletons, results, an error + Retry) and save it as docs/demo.gif -->
@@ -44,6 +44,16 @@ HTML5, Tailwind CSS (Play CDN), vanilla JavaScript (ES modules), TMDB API v3, Pl
    ```
 
 4. Open the printed local URL.
+
+## Deploying to GitHub Pages
+
+The workflow in `.github/workflows/pages.yml` publishes the site on every push to `master`. Because
+`config.js` is git-ignored, it generates that file from a repository secret at deploy time, so the
+token is never committed.
+
+1. Repo **Settings → Secrets and variables → Actions → New repository secret**: name `TMDB_TOKEN`, value your Read Access Token.
+2. Repo **Settings → Pages → Source: GitHub Actions**.
+3. Push to `master` (or run the workflow from the **Actions** tab). The site goes live at the link above.
 
 ## Project structure
 

@@ -1,0 +1,44 @@
+name: Deploy to GitHub Pages
+
+on:
+  push:
+    branches: [master]
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  pages: write
+  id-token: write
+
+concurrency:
+  group: pages
+  cancel-in-progress: true
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    steps:
+      - uses: actions/checkout@v4
+
+      # config.js is git-ignored, so the deployed copy is generated from a repository secret
+      - name: Create config.js from the TMDB_TOKEN secret
+        env:
+          TMDB_TOKEN: ${{ secrets.TMDB_TOKEN }}
+        run: |
+          if [ -z "$TMDB_TOKEN" ]; then
+            echo "::error::Add a repository secret named TMDB_TOKEN (Settings > Secrets and variables > Actions)."
+            exit 1
+          fi
+          printf 'export const TMDB_TOKEN = "%s";\n' "$TMDB_TOKEN" > config.js
+
+      - uses: actions/configure-pages@v5
+
+      - uses: actions/upload-pages-artifact@v3
+        with:
+          path: .
+
+      - id: deployment
+        uses: actions/deploy-pages@v4
