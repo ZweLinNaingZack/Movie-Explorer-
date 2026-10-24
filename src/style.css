@@ -1,0 +1,56 @@
+/* Animations Tailwind utilities don't cover; all switched off for reduced-motion users below */
+
+@keyframes gradient-pan {
+  0%, 100% { background-position: 0% 50%; }
+  50% { background-position: 100% 50%; }
+}
+
+@keyframes float {
+  0%, 100% { transform: translateY(0); }
+  50% { transform: translateY(-16px); }
+}
+
+@keyframes fade-up {
+  from { opacity: 0; transform: translateY(14px); }
+}
+
+@keyframes pop-in {
+  from { opacity: 0; transform: translateY(16px) scale(0.97); }
+}
+
+@keyframes fade-in {
+  from { opacity: 0; }
+}
+
+.title-gradient {
+  background-size: 200% 200%;
+  animation: gradient-pan 8s ease infinite;
+}
+
+.glow-float {
+  animation: float 9s ease-in-out infinite;
+}
+
+/* "backwards" (not "both") so the end state doesn't override the cards' hover transform */
+.card-enter {
+  animation: fade-up 0.5s ease backwards;
+  animation-delay: calc(var(--i, 0) * 45ms);
+}
+
+dialog[open] {
+  animation: pop-in 0.25s ease;
+}
+
+dialog[open]::backdrop {
+  animation: fade-in 0.25s ease;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .title-gradient,
+  .glow-float,
+  .card-enter,
+  dialog[open],
+  dialog[open]::backdrop {
+    animation: none;
+  }
+}

@@ -14,13 +14,17 @@ cards with posters, release year, and rating.
 - Debounced search (400 ms): typing "inception" sends one request, not nine
 - Skeleton loaders while fetching
 - Clear empty and error states, with a Retry button that repeats the last query
+- "Trending now" landing section with All / Movies / Series tabs, fed by TMDB's trending endpoints and refreshed automatically every 5 minutes while the search box is empty
+- "Genres" tab listing every TMDB movie genre (fetched live); picking one shows that genre's most popular movies
+- Click a movie or series to open a details dialog: backdrop banner, rating, vote count, summary, tagline, genres and runtime
+- Hover animations on cards (lift, poster zoom, "View details" overlay); all motion is disabled for users who prefer reduced motion
 - Responsive grid: 2 columns on mobile, 3 on `md`, 4 on `lg`; works from 360 px up
-- Dark mode that follows the OS preference
+- Dark and light themes that follow the OS preference
 - Accessible: labelled input, `aria-live` status region, visible focus styles, keyboard-usable Retry
 
 ## Tech stack
 
-HTML5, Tailwind CSS (Play CDN), vanilla JavaScript (ES modules), TMDB API v3. No framework, no build step, no backend.
+HTML5, Tailwind CSS (Play CDN), vanilla JavaScript (ES modules), TMDB API v3, Plus Jakarta Sans (Google Fonts). No framework, no build step, no backend.
 
 ## Setup
 
@@ -46,9 +50,10 @@ HTML5, Tailwind CSS (Play CDN), vanilla JavaScript (ES modules), TMDB API v3. No
 ```
 index.html        page layout and Tailwind classes
 src/main.js       event wiring and the search flow
-src/api.js        fetchMovies(query, signal)
-src/ui.js         skeletons, cards, empty and error states
+src/api.js        fetchMovies, fetchTrending, fetchGenres, fetchMoviesByGenre, fetchDetails
+src/ui.js         skeletons, cards, details dialog, empty and error states
 src/utils.js      debounce helper
+src/style.css     keyframe animations Tailwind utilities don't cover
 config.example.js token template (copy to config.js)
 ```
 
@@ -62,6 +67,9 @@ config.example.js token template (copy to config.js)
 - **Debounce reads the input when it fires:** a pending search can't bring back text the user just cleared.
 - **No `innerHTML`:** all API data is inserted with `createElement` and `textContent` (and the `img`
   `src`/`alt` properties), so a hostile movie title is rendered as plain text.
+- **Details dialog:** it uses the native `<dialog>` element for Esc-to-close, focus handling and a backdrop. The summary comes from the search response, so it appears instantly; genres, runtime and tagline come from `GET /movie/{id}` and degrade to a short message if that request fails. The request is aborted if the dialog closes first.
+- **Trending is near-live, not streaming:** TMDB rebuilds its trending lists once a day and offers no push API, so the app polls `GET /trending/{type}/day` every 5 minutes. A background refresh keeps the cards on screen and ignores failures, and a list that hasn't changed isn't re-rendered, so nothing flickers.
+- **Series reuse the movie UI:** series come back with `name` / `first_air_date`, so `api.js` maps them onto the movie field names once, and the cards and dialog need no special cases beyond a "Series" label.
 - **Missing data:** no poster shows a placeholder with the title; no release date shows "Unknown".
 - **Small modules:** each file has one job, which keeps the diff and the review surface small.
 
@@ -74,8 +82,6 @@ should keep the token on a server (for example in a Next.js route handler) and c
 ## Possible next steps
 
 - Save the last 5 searches in `localStorage` and show them as chips
-- Movie detail modal using `GET /movie/{id}`
-- "Trending this week" section on load
 - Keyboard navigation between result cards
 - Move the token behind a server-side route handler
 

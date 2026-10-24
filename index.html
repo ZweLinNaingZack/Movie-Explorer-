@@ -5,37 +5,61 @@
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <meta name="color-scheme" content="light dark" />
   <title>Movie Explorer</title>
-  <!-- Play CDN: fine for phase 1; dark: variants follow the OS preference by default -->
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet" />
+  <!-- Play CDN: dark: variants follow the OS preference by default -->
   <script src="https://cdn.tailwindcss.com"></script>
+  <script>
+    tailwind.config = {
+      theme: { extend: { fontFamily: { sans: ['"Plus Jakarta Sans"', "system-ui", "sans-serif"] } } },
+    };
+  </script>
+  <link rel="stylesheet" href="src/style.css" />
 </head>
-<body class="min-h-screen bg-slate-50 text-slate-900 dark:bg-slate-950 dark:text-slate-100">
-  <main class="mx-auto max-w-6xl px-4 py-8">
-    <header class="mb-6 text-center">
-      <h1 class="text-3xl font-bold tracking-tight">Movie Explorer</h1>
-      <p class="mt-1 text-sm text-slate-600 dark:text-slate-400">Search movies powered by TMDB</p>
+<body class="min-h-screen bg-zinc-50 font-sans text-zinc-900 antialiased dark:bg-zinc-950 dark:text-zinc-100">
+  <div aria-hidden="true" class="pointer-events-none fixed inset-0 -z-10 overflow-hidden">
+    <div class="glow-float absolute -left-24 -top-24 h-96 w-96 rounded-full bg-yellow-300/40 blur-3xl dark:bg-yellow-500/15"></div>
+    <div class="glow-float absolute -right-24 top-40 h-96 w-96 rounded-full bg-amber-300/40 blur-3xl [animation-delay:-4s] dark:bg-amber-500/10"></div>
+  </div>
+
+  <main class="mx-auto max-w-6xl px-4 py-10 sm:py-14">
+    <header class="mb-8 text-center">
+      <p class="mb-4 inline-flex items-center gap-2 rounded-full bg-white/70 px-3 py-1 text-xs font-semibold uppercase tracking-widest text-yellow-700 ring-1 ring-zinc-900/5 backdrop-blur dark:bg-white/5 dark:text-yellow-300 dark:ring-white/10">
+        <span aria-hidden="true">🎬</span> Powered by TMDB
+      </p>
+      <h1 class="title-gradient bg-gradient-to-r from-amber-600 via-yellow-600 to-amber-700 bg-clip-text dark:from-yellow-200 dark:via-yellow-400 dark:to-amber-500 pb-1 text-4xl font-extrabold leading-tight tracking-tight text-transparent sm:text-6xl">
+        Movie Explorer
+      </h1>
+      <p class="mt-3 text-zinc-600 dark:text-zinc-400">Search millions of movies and find your next favourite.</p>
     </header>
 
-    <form id="search-form" role="search" class="mx-auto mb-6 max-w-xl">
+    <form id="search-form" role="search" class="mx-auto mb-6 max-w-2xl">
       <label for="search-input" class="sr-only">Search movies by title</label>
-      <div class="relative">
+      <div class="group relative">
+        <svg aria-hidden="true" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"
+             class="pointer-events-none absolute left-5 top-1/2 z-10 h-5 w-5 -translate-y-1/2 text-zinc-400 transition group-focus-within:text-yellow-600 dark:group-focus-within:text-yellow-400">
+          <circle cx="11" cy="11" r="7" />
+          <path d="m20 20-3.5-3.5" />
+        </svg>
         <input
           id="search-input"
           type="text"
           autocomplete="off"
           placeholder="Search for a movie, e.g. Inception"
-          class="w-full rounded-lg border border-slate-300 bg-white py-3 pl-4 pr-12 text-base shadow-sm
-                 placeholder:text-slate-500
-                 focus:outline-none focus:ring-2 focus:ring-indigo-500
-                 dark:border-slate-700 dark:bg-slate-900 dark:placeholder:text-slate-400"
+          class="w-full rounded-full border-0 bg-white/80 py-4 pl-14 pr-14 text-base shadow-xl shadow-yellow-500/10 ring-1 ring-zinc-900/10 backdrop-blur
+                 placeholder:text-zinc-500 transition
+                 focus:outline-none focus:ring-2 focus:ring-yellow-500 focus:shadow-yellow-500/30
+                 dark:bg-zinc-900/70 dark:ring-white/10 dark:placeholder:text-zinc-400"
         />
         <button
           id="clear-button"
           type="button"
           aria-label="Clear search"
-          class="absolute right-2 top-1/2 flex h-8 w-8 -translate-y-1/2 items-center justify-center rounded-md
-                 text-slate-500 hover:bg-slate-100
-                 focus:outline-none focus:ring-2 focus:ring-indigo-500
-                 dark:text-slate-400 dark:hover:bg-slate-800"
+          class="absolute right-3 top-1/2 hidden h-9 w-9 -translate-y-1/2 items-center justify-center rounded-full text-zinc-500
+                 transition hover:bg-zinc-200/70
+                 focus:outline-none focus-visible:ring-2 focus-visible:ring-yellow-500
+                 dark:text-zinc-400 dark:hover:bg-white/10"
         >
           <span aria-hidden="true" class="text-xl leading-none">&times;</span>
         </button>
@@ -43,14 +67,78 @@
     </form>
 
     <!-- Status area: idle / empty / error messages go here -->
-    <div id="status" aria-live="polite" class="mb-6 min-h-[1.5rem] text-center text-slate-600 dark:text-slate-400">
+    <div id="status" aria-live="polite" class="mb-8 min-h-[1.5rem] text-center text-zinc-600 dark:text-zinc-400">
       Start typing to search for movies.
     </div>
 
     <!-- Results grid: 2 columns on mobile, 3 at md, 4 at lg -->
-    <ul id="results" class="grid grid-cols-2 gap-4 md:grid-cols-3 lg:grid-cols-4">
-    </ul>
+    <ul id="results" class="grid grid-cols-2 gap-4 sm:gap-6 md:grid-cols-3 lg:grid-cols-4"></ul>
+
+    <!-- Landing page: shown while the search box is empty -->
+    <section id="landing">
+      <div class="mb-8 flex justify-center">
+        <div id="landing-tabs" role="group" aria-label="Browse" class="inline-flex rounded-full bg-zinc-200/70 p-1 dark:bg-white/5">
+          <button type="button" data-tab="trending">Trending</button>
+          <button type="button" data-tab="genres">Genres</button>
+        </div>
+      </div>
+
+      <div id="trending-panel">
+      <div class="mb-5 flex flex-wrap items-center justify-between gap-3">
+        <div class="flex flex-wrap items-center gap-3">
+          <h2 id="trending-title" class="text-xl font-extrabold sm:text-2xl">Trending now</h2>
+          <span class="inline-flex items-center gap-1.5 rounded-full bg-yellow-400/15 px-2.5 py-1 text-xs font-bold text-yellow-700 dark:text-yellow-300">
+            <span aria-hidden="true" class="relative flex h-2 w-2">
+              <span class="absolute inline-flex h-full w-full animate-ping rounded-full bg-yellow-400 opacity-75 motion-reduce:animate-none"></span>
+              <span class="relative inline-flex h-2 w-2 rounded-full bg-yellow-500"></span>
+            </span>
+            LIVE
+          </span>
+          <span id="trending-updated" class="text-xs text-zinc-500"></span>
+        </div>
+        <div id="trending-tabs" role="group" aria-label="Trending type" class="inline-flex rounded-full bg-zinc-200/70 p-1 dark:bg-white/5">
+          <button type="button" data-tab="all">All</button>
+          <button type="button" data-tab="movie">Movies</button>
+          <button type="button" data-tab="tv">Series</button>
+        </div>
+      </div>
+      <div id="trending-status" aria-live="polite" class="mb-6 text-center text-zinc-600 dark:text-zinc-400"></div>
+      <ul id="trending-results" class="grid grid-cols-2 gap-4 sm:gap-6 md:grid-cols-3 lg:grid-cols-4"></ul>
+      </div>
+
+      <div id="genres-panel" class="hidden">
+        <div id="genre-list" role="group" aria-label="Genres" class="mb-8 flex flex-wrap justify-center gap-2"></div>
+        <h2 id="genre-heading" class="mb-5 text-xl font-extrabold sm:text-2xl"></h2>
+        <div id="genre-status" aria-live="polite" class="mb-6 text-center text-zinc-600 dark:text-zinc-400"></div>
+        <ul id="genre-results" class="grid grid-cols-2 gap-4 sm:gap-6 md:grid-cols-3 lg:grid-cols-4"></ul>
+      </div>
+    </section>
+
+    <footer class="mt-14 text-center text-xs text-zinc-500 dark:text-zinc-500">
+      This product uses the TMDB API but is not endorsed or certified by TMDB.
+    </footer>
   </main>
+
+  <dialog
+    id="movie-dialog"
+    aria-labelledby="movie-dialog-title"
+    class="max-h-[90vh] w-[calc(100%-2rem)] max-w-2xl overflow-y-auto rounded-3xl bg-white p-0 text-zinc-900 shadow-2xl
+           backdrop:bg-zinc-950/70 backdrop:backdrop-blur-sm dark:bg-zinc-900 dark:text-zinc-100"
+  >
+    <div class="relative">
+      <form method="dialog" class="absolute right-3 top-3 z-10">
+        <button
+          aria-label="Close details"
+          class="flex h-9 w-9 items-center justify-center rounded-full bg-black/40 text-white backdrop-blur transition
+                 hover:bg-black/60 focus:outline-none focus-visible:ring-2 focus-visible:ring-white"
+        >
+          <span aria-hidden="true" class="text-xl leading-none">&times;</span>
+        </button>
+      </form>
+      <div id="movie-dialog-body"></div>
+    </div>
+  </dialog>
+
   <script type="module" src="src/main.js"></script>
 </body>
 </html>
